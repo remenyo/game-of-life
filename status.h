@@ -3,7 +3,7 @@
 
 typedef enum Statustype
 {
-    successful,
+    successful = 1,
     info,
     warning,
     error

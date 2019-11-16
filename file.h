@@ -3,5 +3,6 @@
 #include "pattern.h"
 
 Pattern *load_file(char *filename);
+void free_pattern(Pattern *pattern);
 
 #endif

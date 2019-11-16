@@ -20,6 +20,7 @@ int main()
 
     int menu_items_n = 6;
     char *menu_items[] = {"New pattern", "Load pattern", "Play", "Edit", "Save", "Exit"};
+    Pattern *pattern;
     while (true)
     {
         int selection = show_menu(menu_items, menu_items_n, 2);
@@ -29,7 +30,15 @@ int main()
             /* code */
             break;
         case 1: // Load pattern
-            /* code */
+            if (pattern != NULL)
+            {
+                free_pattern(pattern);
+            }
+            pattern = load_file("glider.txt");
+            if (pattern != NULL)
+            {
+                print_status(successful, "Pattern loaded successfully");
+            }
             break;
         case 2: // Play
             /* code */
@@ -41,6 +50,10 @@ int main()
             /* code */
             break;
         case 5: // Exit
+            if (pattern != NULL)
+            {
+                free_pattern(pattern);
+            }
             endwin();
             exit(EXIT_SUCCESS);
             break;

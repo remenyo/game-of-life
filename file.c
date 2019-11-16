@@ -41,25 +41,25 @@ static bool file_valid(FILE *file)
     {
         if ((c != '.') && (c != 'O') && (c != '\n'))
         {
-            if (c == '.' || c == 'O')
-            {
-                pattern_exists = true; // van pattern!
-            }
-            print_status(error, "A not valid character was found in your pattern.");
+            print_status(warning, "A not valid character was found in your pattern.");
             return false;
+        }
+        if (!pattern_exists && (c == '.' || c == 'O'))
+        {
+            pattern_exists = true; // van pattern!
         }
         c = fgetc(file);
     }
     if (!pattern_exists)
     {
-        print_status(error, "No pattern found in your file");
+        print_status(warning, "No pattern found in your file.");
         return false;
     }
 
     return true;
 }
 
-Pattern *load_file(char *filename) // Beolvas egy fájlt, és ha helyes a formázás, megépít egy élettér struktúrát, amit visszaad.
+struct Pattern *load_file(char *filename) // Beolvas egy fájlt, és ha helyes a formázás, megépít egy élettér struktúrát, amit visszaad.
 {
     FILE *file = fopen(filename, "r");
     if (file == NULL)
@@ -78,21 +78,25 @@ Pattern *load_file(char *filename) // Beolvas egy fájlt, és ha helyes a formá
     // Élettér struktúra létrehozása
     Pattern *pattern = (Pattern *)malloc(sizeof(Pattern));
 
-    for (int i = 0; i < strlen(namestring); i++)
+    for (int i = 0; i < (int)strlen(namestring); i++)
     {
         c = fgetc(file);
     }
     fflush(file);
     unsigned long name_start_pos = ftell(file);
-    int name_lenght = 1; // Azért nem 0, mert a végén a \n karakter is kell a name mértetéhez.
+    int name_lenght = 0; // Azért nem 0, mert a végén a \0 karakter is kell a name mértetéhez.
     while (c != '\n')    // Name string hossza
     {
         name_lenght++;
         c = fgetc(file);
     }
+    while (c != '.' && c != 'O')
+    {
+        c = fgetc(file);
+    }
 
     fflush(file);
-    unsigned long pattern_start_pos = ftell(file);
+    unsigned long pattern_start_pos = ftell(file) - 1;
     pattern->name = (char *)malloc(sizeof(char) * name_lenght);
     fseek(file, name_start_pos, SEEK_SET);
     fgets(pattern->name, name_lenght, file); // Név beolvasása
@@ -103,6 +107,7 @@ Pattern *load_file(char *filename) // Beolvas egy fájlt, és ha helyes a formá
     fseek(file, pattern_start_pos, SEEK_SET);
     pattern->size.x = 0;
     pattern->size.y = 0;
+    c = fgetc(file);
     while (c != '\n')
     {
         pattern->size.x++;
@@ -111,10 +116,11 @@ Pattern *load_file(char *filename) // Beolvas egy fájlt, és ha helyes a formá
 
     // Sorok száma:
     fseek(file, pattern_start_pos, SEEK_SET);
+    c = fgetc(file);
     while (c != EOF)
     {
         bool line_contains_pattern = false;
-        while (c != '\n')
+        while (c != '\n' && c != EOF)
         {
             if (!line_contains_pattern && (c == '.' || c == 'O')) // ha van a sorban élettér adat
             {
@@ -123,12 +129,23 @@ Pattern *load_file(char *filename) // Beolvas egy fájlt, és ha helyes a formá
             }
             c = fgetc(file);
         }
+        c = fgetc(file);
     }
 
     // Az élettérhez szükséges memória lefoglalása (calloc-al, mert lehet,
     //  hogy az első sor hoszabb volt mint a többi, így az az első sor alatt lévő celláknak alapértelmezetten 0-nak, halottnak kell lennie.)
     pattern->pattern = (int **)calloc(pattern->size.y, sizeof(int *));
+    if (pattern->pattern == NULL)
+    {
+        print_status(error, "Memory allocation failed.");
+        return NULL;
+    }
     pattern->pattern[0] = (int *)calloc(pattern->size.y * pattern->size.x, sizeof(int));
+    if (pattern->pattern[0] == NULL)
+    {
+        print_status(error, "Memory allocation failed.");
+        return NULL;
+    }
     for (int i = 1; i < pattern->size.y; i++)
     {
         pattern->pattern[i] = pattern->pattern[0] + i * pattern->size.x;
@@ -142,7 +159,7 @@ Pattern *load_file(char *filename) // Beolvas egy fájlt, és ha helyes a formá
     c = fgetc(file);
     while (c != EOF)
     {
-        while (c != '\n')
+        while (c != '\n' && c != EOF)
         {
             pattern->pattern[y][x] = (c == '.' ? state_dead : state_alive);
             x++;
@@ -156,4 +173,12 @@ Pattern *load_file(char *filename) // Beolvas egy fájlt, és ha helyes a formá
 
     fclose(file);
     return pattern;
+}
+
+void free_pattern(Pattern *pattern)
+{
+    free(pattern->name);
+    free(pattern->pattern[0]);
+    free(pattern->pattern);
+    free(pattern);
 }

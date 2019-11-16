@@ -1,13 +1,5 @@
 #include <ncurses.h>
 
-typedef enum Statustype
-{
-    successful,
-    info,
-    warning,
-    error
-} Statustype;
-
 void init_status()
 {
     // Színek (Nord):
@@ -17,13 +9,13 @@ void init_status()
     init_color(COLOR_YELLOW, 922, 796, 545);
     init_color(COLOR_BLUE, 369, 506, 675);
 
-    init_pair(0, COLOR_BLACK, COLOR_GREEN);  // successful
-    init_pair(1, COLOR_WHITE, COLOR_BLUE);   // info
-    init_pair(2, COLOR_BLACK, COLOR_YELLOW); // warning
-    init_pair(3, COLOR_WHITE, COLOR_RED);    // error
+    init_pair(1, COLOR_BLACK, COLOR_GREEN);  // successful
+    init_pair(2, COLOR_WHITE, COLOR_BLUE);   // info
+    init_pair(3, COLOR_BLACK, COLOR_YELLOW); // warning
+    init_pair(4, COLOR_WHITE, COLOR_RED);    // error
 }
 
-void print_status(Statustype message_type, char *message)
+void print_status(int message_type, char *message)
 {
     int rows, cols; // = Terminal magassag, szelesseg
     getmaxyx(stdscr, rows, cols);
@@ -33,7 +25,8 @@ void print_status(Statustype message_type, char *message)
     {
         addch(' ');
     }
-    move(rows - 1, 0);
+    move(rows - 1, 1);
     printw(message);
+    attroff(COLOR_PAIR(message_type));
     refresh();
 }
