@@ -1,43 +1,46 @@
-#include <locale.h>
 #include <stdlib.h>
 #include <ncurses.h>
 #include <stdbool.h>
 #include <stdlib.h>
+
 #include "menu.h"
+#include "file.h"
+#include "pattern.h"
+#include "status.h"
 
 int main()
 {
-    setlocale(LC_ALL, "hu_HU.utf8");
     initscr();
     cbreak();
     noecho();
     keypad(stdscr, TRUE);
-    start_color();
     curs_set(0);
+    start_color();
+    init_status();
 
     int menu_items_n = 6;
-    char *menu_items[] = {"Új élettér", "Élettér megnyitása", "Lejátszás", "Módosítás", "Mentés", "Kilépés"};
+    char *menu_items[] = {"New pattern", "Load pattern", "Play", "Edit", "Save", "Exit"};
     while (true)
     {
-        int selection = show_menu(menu_items, menu_items_n, 18, 2);
+        int selection = show_menu(menu_items, menu_items_n, 2);
         switch (selection)
         {
-        case 0: // Uj eletter
+        case 0: // New pattern
             /* code */
             break;
-        case 1: // Eletter megnyitasa
+        case 1: // Load pattern
             /* code */
             break;
-        case 2: // Lejatszas
+        case 2: // Play
             /* code */
             break;
-        case 3: // Modositas
+        case 3: // Edit
             /* code */
             break;
-        case 4: // Mentes
+        case 4: // Save
             /* code */
             break;
-        case 5: // Kilepes
+        case 5: // Exit
             endwin();
             exit(EXIT_SUCCESS);
             break;
