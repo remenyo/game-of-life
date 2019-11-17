@@ -1,6 +1,8 @@
 #ifndef ELETTER_H
 #define ELETTER_H
 
+#include <stdbool.h>
+
 enum state
 {
     state_dead = 0,

@@ -63,7 +63,7 @@ Egyszer, a curses színek (`start_color()`) inicializálása után kell meghívn
 ```c
 char *get_input(char *message);
 ```
-Bekér egy string-et a felhasználótól, amit dinamikusan lefoglalt területen visszaad a hívónak.
+Bekér egy string-et a felhasználótól (a status könyvtár segítségével), amit dinamikusan lefoglalt területen visszaad a hívónak.
 
 Használat után a string tömböt fel kell szabadítani memóriaszivárgás elkerülése végett.
 
