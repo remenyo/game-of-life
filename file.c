@@ -1,9 +1,9 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
-#include <stdlib.h>
 
 #include "status.h"
+#include "input.h"
 #include "pattern.h"
 #include "debugmalloc.h"
 
@@ -59,9 +59,11 @@ static bool file_valid(FILE *file)
     return true;
 }
 
-struct Pattern *load_file(char *filename) // Beolvas egy fájlt, és ha helyes a formázás, megépít egy élettér struktúrát, amit visszaad.
+struct Pattern *load_file() // Beolvas egy fájlt, és ha helyes a formázás, megépít egy élettér struktúrát, amit visszaad.
 {
-    FILE *file = fopen(filename, "r");
+    char *filename = get_input("Name of file:");
+    FILE *file = fopen(filename, "rt");
+    free(filename);
     if (file == NULL)
     {
         print_status(error, "Failed to open file.");
@@ -181,4 +183,37 @@ void free_pattern(Pattern *pattern)
     free(pattern->pattern[0]);
     free(pattern->pattern);
     free(pattern);
+}
+
+void save_pattern(Pattern *pattern)
+{
+    char *name = get_input("Name of pattern:");
+    char *filename = calloc(strlen(name), sizeof(char) + 4); // ==name + ".txt" + \0
+    strcpy(filename, name);
+    strcat(filename, ".txt");
+    FILE *f = fopen(filename, "wt");
+    if (f == NULL)
+    {
+        print_status(error, "Failed to make file.");
+    }
+    else
+    {
+        free(pattern->name);
+        pattern->name = (char *)calloc((strlen(name) + 1), sizeof(char));
+        strcpy(pattern->name, name);
+        fprintf(f, "%s%s\n!", namestring, pattern->name);
+        for (int y = 0; y < pattern->size.y; y++)
+        {
+            fputc('\n', f);
+            for (int x = 0; x < pattern->size.x; x++)
+            {
+                fprintf(f, "%c", pattern->pattern[y][x] == state_alive ? 'O' : '.');
+            }
+        }
+        fclose(f);
+        print_status(successful, "Pattern saved successfully!");
+        pattern->dirty = false;
+    }
+    free(name);
+    free(filename);
 }

@@ -1,12 +1,12 @@
-#include <stdlib.h>
 #include <ncurses.h>
 #include <stdbool.h>
-#include <stdlib.h>
 
 #include "menu.h"
 #include "file.h"
 #include "pattern.h"
 #include "status.h"
+#include "input.h"
+#include "debugmalloc.h"
 
 int main()
 {
@@ -20,7 +20,7 @@ int main()
 
     int menu_items_n = 6;
     char *menu_items[] = {"New pattern", "Load pattern", "Play", "Edit", "Save", "Exit"};
-    Pattern *pattern;
+    Pattern *pattern = NULL;
     while (true)
     {
         int selection = show_menu(menu_items, menu_items_n, 2);
@@ -33,21 +33,32 @@ int main()
             if (pattern != NULL)
             {
                 free_pattern(pattern);
+                pattern = NULL;
             }
-            pattern = load_file("glider.txt");
+            pattern = load_file();
             if (pattern != NULL)
             {
-                print_status(successful, "Pattern loaded successfully");
+                print_status(successful, "Pattern loaded successfully!");
             }
             break;
         case 2: // Play
-            /* code */
+            if (pattern == NULL)
+            {
+                print_status(info, "No pattern was loaded. Use 'New pattern' or 'Load pattern'");
+            }
             break;
         case 3: // Edit
             /* code */
             break;
         case 4: // Save
-            /* code */
+            if (pattern == NULL)
+            {
+                print_status(info, "No pattern was loaded. Use 'New pattern' or 'Load pattern'");
+            }
+            else
+            {
+                save_pattern(pattern);
+            }
             break;
         case 5: // Exit
             if (pattern != NULL)
