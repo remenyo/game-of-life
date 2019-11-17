@@ -6,6 +6,7 @@
 #include "pattern.h"
 #include "status.h"
 #include "input.h"
+#include "play.h"
 #include "debugmalloc.h"
 
 int main()
@@ -46,6 +47,11 @@ int main()
             {
                 print_status(info, "No pattern was loaded. Use 'New pattern' or 'Load pattern'");
             }
+            else
+            {
+                play_pattern(pattern);
+            }
+
             break;
         case 3: // Edit
             /* code */

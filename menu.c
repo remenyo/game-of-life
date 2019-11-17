@@ -32,11 +32,9 @@ static void print_menu_items(WINDOW *menu_win, char **menu_items, int items_n, i
 int show_menu(char **menu_items, int items_n, int border_size)
 {
     int selection = 0; // = Kivalasztott elem
-    int rows, cols, c; // = Terminal magassag, szelesseg, a 'c' valtozo a billentyu bemenet tarolasahoz kell
-    getmaxyx(stdscr, rows, cols);
-    WINDOW *menu_win = newwin(items_n + border_size, longest_menu_item_lenght(menu_items, items_n) + border_size * 2, (rows - (items_n + border_size)) / 2, (cols - (longest_menu_item_lenght(menu_items, items_n) + border_size * 2)) / 2);
+    int c;             // = Terminal magassag, szelesseg, a 'c' valtozo a billentyu bemenet tarolasahoz kell
+    WINDOW *menu_win = newwin(items_n + border_size, longest_menu_item_lenght(menu_items, items_n) + border_size * 2, (LINES - (items_n + border_size)) / 2, (COLS - (longest_menu_item_lenght(menu_items, items_n) + border_size * 2)) / 2);
     keypad(menu_win, TRUE);
-
     box(menu_win, ACS_VLINE, ACS_HLINE);
     print_menu_items(menu_win, menu_items, items_n, selection, border_size);
     wrefresh(menu_win);
@@ -50,14 +48,16 @@ int show_menu(char **menu_items, int items_n, int border_size)
         case KEY_DOWN:
             selection == items_n - 1 ? selection = 0 : selection++;
             break;
+        case KEY_RESIZE:
+            refresh();
+            break;
         default:
             break;
         }
         print_menu_items(menu_win, menu_items, items_n, selection, border_size);
         wrefresh(menu_win);
     }
-    wborder(menu_win, ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ');
-    wrefresh(menu_win);
+    wclear(menu_win);
     delwin(menu_win);
     return selection;
 }

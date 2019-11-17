@@ -1,6 +1,6 @@
-OBJS	= main.o menu.o file.o status.o input.o
-SOURCE	= main.c menu.c file.c status.c input.c
-HEADER	= menu.h file.h pattern.h input.h debugmalloc.h
+OBJS	= main.o menu.o file.o status.o input.o play.o
+SOURCE	= main.c menu.c file.c status.c input.c play.c
+HEADER	= menu.h file.h pattern.h input.h play.h debugmalloc.h
 OUT	= main
 CC	 = gcc
 FLAGS	 = -g -c -Wall -Wextra -std=c99

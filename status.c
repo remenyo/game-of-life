@@ -17,15 +17,13 @@ void init_status()
 
 void print_status(int message_type, char *message)
 {
-    int rows, cols; // = Terminal magassag, szelesseg
-    getmaxyx(stdscr, rows, cols);
     attron(COLOR_PAIR(message_type));
-    move(rows - 1, 0);
-    for (int i = 0; i < cols; i++) // Előző üzenet törlése
+    move(LINES - 1, 0);
+    for (int i = 0; i < COLS; i++) // Előző üzenet törlése
     {
         addch(' ');
     }
-    move(rows - 1, 1);
+    move(LINES - 1, 1);
     printw(message);
     attroff(COLOR_PAIR(message_type));
     refresh();
