@@ -21,4 +21,6 @@ typedef struct Pattern
     bool dirty;    // = modositva lett mentes/betoltes ota az eletter.
 } Pattern;
 
+void free_pattern(Pattern *pattern);
+
 #endif

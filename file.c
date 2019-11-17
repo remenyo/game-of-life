@@ -177,14 +177,6 @@ struct Pattern *load_file() // Beolvas egy fájlt, és ha helyes a formázás, m
     return pattern;
 }
 
-void free_pattern(Pattern *pattern)
-{
-    free(pattern->name);
-    free(pattern->pattern[0]);
-    free(pattern->pattern);
-    free(pattern);
-}
-
 void save_pattern(Pattern *pattern)
 {
     char *name = get_input("Name of pattern:");

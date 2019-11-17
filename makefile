@@ -1,5 +1,5 @@
-OBJS	= main.o menu.o file.o status.o input.o play.o
-SOURCE	= main.c menu.c file.c status.c input.c play.c
+OBJS	= main.o menu.o file.o pattern.o status.o input.o play.o
+SOURCE	= main.c menu.c file.c pattern.c status.c input.c play.c
 HEADER	= menu.h file.h pattern.h input.h play.h debugmalloc.h
 OUT	= main
 CC	 = gcc
@@ -23,6 +23,12 @@ status.o: status.c
 
 input.o: input.c
 	$(CC) $(FLAGS) input.c
+
+play.o: play.c
+	$(CC) $(FLAGS) play.c
+
+pattern.o: pattern.c
+	$(CC) $(FLAGS) pattern.c
 
 clean:
 	rm -f $(OBJS) $(OUT)
