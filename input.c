@@ -1,5 +1,6 @@
 #include <ncurses.h>
 #include <string.h>
+#include <ctype.h>
 
 #include "status.h"
 #include "debugmalloc.h"
@@ -35,11 +36,15 @@ char *get_input(char *message)
             }
             break;
         default:
-            mvaddch(rows - 1, x_null + curs_pos, c);
-            input = realloc(input, sizeof(char) * curs_pos + 2);
-            input[curs_pos] = c;
-            input[curs_pos + 1] = 0;
-            x++;
+            if (isprint(c))
+            {
+                mvaddch(rows - 1, x_null + curs_pos, c);
+                input = realloc(input, sizeof(char) * curs_pos + 2);
+                input[curs_pos] = c;
+                input[curs_pos + 1] = 0;
+                x++;
+            }
+
             break;
         }
         refresh();
