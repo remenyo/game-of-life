@@ -9,7 +9,7 @@ static void print_pattern(WINDOW *pattern_win, Pattern *pattern)
     {
         for (int x = 0; x < pattern->size.x; x++)
         {
-            if (pattern->pattern[y][x] == state_alive)
+            if (pattern->cells[y][x] == state_alive)
             {
                 wattron(pattern_win, A_STANDOUT);
             }

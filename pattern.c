@@ -4,7 +4,7 @@
 void free_pattern(Pattern *pattern)
 {
     free(pattern->name);
-    free(pattern->pattern[0]);
-    free(pattern->pattern);
+    free(pattern->cells[0]);
+    free(pattern->cells);
     free(pattern);
 }

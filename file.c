@@ -136,21 +136,21 @@ struct Pattern *load_file() // Beolvas egy fájlt, és ha helyes a formázás, m
 
     // Az élettérhez szükséges memória lefoglalása (calloc-al, mert lehet,
     //  hogy az első sor hoszabb volt mint a többi, így az az első sor alatt lévő celláknak alapértelmezetten 0-nak, halottnak kell lennie.)
-    pattern->pattern = (int **)calloc(pattern->size.y, sizeof(int *));
-    if (pattern->pattern == NULL)
+    pattern->cells = (int **)calloc(pattern->size.y, sizeof(int *));
+    if (pattern->cells == NULL)
     {
         print_status(error, "Memory allocation failed.");
         return NULL;
     }
-    pattern->pattern[0] = (int *)calloc(pattern->size.y * pattern->size.x, sizeof(int));
-    if (pattern->pattern[0] == NULL)
+    pattern->cells[0] = (int *)calloc(pattern->size.y * pattern->size.x, sizeof(int));
+    if (pattern->cells[0] == NULL)
     {
         print_status(error, "Memory allocation failed.");
         return NULL;
     }
     for (int i = 1; i < pattern->size.y; i++)
     {
-        pattern->pattern[i] = pattern->pattern[0] + i * pattern->size.x;
+        pattern->cells[i] = pattern->cells[0] + i * pattern->size.x;
     }
 
     // Élettér feltöltése
@@ -163,7 +163,7 @@ struct Pattern *load_file() // Beolvas egy fájlt, és ha helyes a formázás, m
     {
         while (c != '\n' && c != EOF)
         {
-            pattern->pattern[y][x] = (c == '.' ? state_dead : state_alive);
+            pattern->cells[y][x] = (c == '.' ? state_dead : state_alive);
             x++;
             c = fgetc(file);
         }
@@ -199,7 +199,7 @@ void save_pattern(Pattern *pattern)
             fputc('\n', f);
             for (int x = 0; x < pattern->size.x; x++)
             {
-                fprintf(f, "%c", pattern->pattern[y][x] == state_alive ? 'O' : '.');
+                fprintf(f, "%c", pattern->cells[y][x] == state_alive ? 'O' : '.');
             }
         }
         fclose(f);
