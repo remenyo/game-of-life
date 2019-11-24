@@ -134,23 +134,12 @@ struct Pattern *load_file() // Beolvas egy fájlt, és ha helyes a formázás, m
         c = fgetc(file);
     }
 
-    // Az élettérhez szükséges memória lefoglalása (calloc-al, mert lehet,
-    //  hogy az első sor hoszabb volt mint a többi, így az az első sor alatt lévő celláknak alapértelmezetten 0-nak, halottnak kell lennie.)
-    pattern->cells = (int **)calloc(pattern->size.y, sizeof(int *));
+    pattern->cells = alloc_pattern_cells(pattern->size.y, pattern->size.x);
+
     if (pattern->cells == NULL)
     {
         print_status(error, "Memory allocation failed.");
         return NULL;
-    }
-    pattern->cells[0] = (int *)calloc(pattern->size.y * pattern->size.x, sizeof(int));
-    if (pattern->cells[0] == NULL)
-    {
-        print_status(error, "Memory allocation failed.");
-        return NULL;
-    }
-    for (int i = 1; i < pattern->size.y; i++)
-    {
-        pattern->cells[i] = pattern->cells[0] + i * pattern->size.x;
     }
 
     // Élettér feltöltése

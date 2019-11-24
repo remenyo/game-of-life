@@ -2,6 +2,7 @@
 #define ELETTER_H
 
 #include <stdbool.h>
+#include <stddef.h>
 
 enum state
 {
@@ -24,5 +25,6 @@ typedef struct Pattern
 } Pattern;
 
 void free_pattern(Pattern *pattern);
+int **alloc_pattern_cells(size_t y, size_t x);
 
 #endif
