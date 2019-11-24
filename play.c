@@ -13,10 +13,10 @@ static void print_pattern(WINDOW *pattern_win, Pattern *pattern)
             {
                 wattron(pattern_win, A_STANDOUT);
             }
-            mvwprintw(pattern_win, y, x * 2, "  ");
+            mvwprintw(pattern_win, y + 1, x * 2 + 1, "  ");
             wattroff(pattern_win, A_STANDOUT);
         }
-        waddch(pattern_win, '\n');
+        waddch(pattern_win, ACS_VLINE);
     }
     wrefresh(pattern_win);
 }
@@ -28,13 +28,13 @@ void play_pattern(Pattern *pattern)
         print_status(warning, "The pattern is bigger than your terminal window.");
         return;
     }
-
-    WINDOW *pattern_win = newwin(pattern->size.y, pattern->size.x * 2, (LINES - pattern->size.y) / 2, (COLS / 2 - pattern->size.x) / 2);
+    WINDOW *pattern_win = newwin(pattern->size.y + 2, ((pattern->size.x + 1) * 2), ((LINES - pattern->size.y) - 2) / 2, ((COLS - (pattern->size.x + 1) * 2)) / 2);
     if (pattern_win == NULL)
     {
         print_status(error, "Pattern window allocation failed.");
         return;
     }
+    clear();
     print_status(info, "Loaded.");
     keypad(pattern_win, TRUE);
     box(pattern_win, ACS_VLINE, ACS_HLINE);

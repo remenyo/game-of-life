@@ -13,7 +13,7 @@ static bool file_valid(FILE *file)
 {
     rewind(file);
     char c;
-    for (int i = 0; i < (int)strlen(namestring); i++)
+    for (size_t i = 0; i < strlen(namestring); i++)
     {
         c = fgetc(file);
         if (c != namestring[i])
@@ -80,14 +80,14 @@ struct Pattern *load_file() // Beolvas egy fájlt, és ha helyes a formázás, m
     // Élettér struktúra létrehozása
     Pattern *pattern = (Pattern *)malloc(sizeof(Pattern));
 
-    for (int i = 0; i < (int)strlen(namestring); i++)
+    for (size_t i = 0; i < strlen(namestring); i++)
     {
         c = fgetc(file);
     }
     fflush(file);
     unsigned long name_start_pos = ftell(file);
-    int name_lenght = 0; // Azért nem 0, mert a végén a \0 karakter is kell a name mértetéhez.
-    while (c != '\n')    // Name string hossza
+    int name_lenght = 0;
+    while (c != '\n') // Name string hossza
     {
         name_lenght++;
         c = fgetc(file);

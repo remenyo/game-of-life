@@ -1,12 +1,12 @@
 #include <ncurses.h>
 #include <string.h>
 
-static int longest_menu_item_lenght(char **menu_items, int items_n)
+static size_t longest_menu_item_lenght(char **menu_items, int items_n)
 {
-    int max_len = 0;
+    size_t max_len = 0;
     for (int i = 0; i < items_n; i++)
     {
-        if ((int)strlen(menu_items[i]) > max_len)
+        if (strlen(menu_items[i]) > max_len)
             max_len = strlen(menu_items[i]);
     }
     return max_len;
