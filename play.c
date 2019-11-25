@@ -46,7 +46,10 @@ void play_pattern(Pattern *pattern)
         switch (c)
         {
         case ' ':
-            print_status(info, "Space pressed -> next generation");
+            next_generation(pattern);
+            print_pattern(pattern_win, pattern);
+            wrefresh(pattern_win);
+            print_status(info, "Next generation");
             break;
         default:
             break;

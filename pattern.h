@@ -12,8 +12,8 @@ enum state
 
 typedef struct Size
 {
-    int x;
-    int y;
+    size_t x;
+    size_t y;
 } Size;
 
 typedef struct Pattern
@@ -26,5 +26,6 @@ typedef struct Pattern
 
 void free_pattern(Pattern *pattern);
 int **alloc_pattern_cells(size_t y, size_t x);
+void next_generation(Pattern *pattern);
 
 #endif
