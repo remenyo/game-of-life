@@ -59,18 +59,21 @@ int main()
             {
                 print_status(info, "No pattern was loaded. Use 'New pattern' or 'Load pattern'");
             }
-            if (pattern->dirty)
+
+            else
             {
-                if (warn_dirty())
+                if (pattern->dirty)
+                {
+                    if (warn_dirty())
+                    {
+                        play_pattern(pattern);
+                    }
+                }
+                else
                 {
                     play_pattern(pattern);
                 }
             }
-            else
-            {
-                play_pattern(pattern);
-            }
-
             break;
         case 3: // Edit
             if (pattern->dirty)
