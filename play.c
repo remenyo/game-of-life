@@ -5,9 +5,9 @@
 
 static void print_pattern(WINDOW *pattern_win, Pattern *pattern)
 {
-    for (int y = 0; y < pattern->size.y; y++)
+    for (size_t y = 0; y < pattern->size.y; y++)
     {
-        for (int x = 0; x < pattern->size.x; x++)
+        for (size_t x = 0; x < pattern->size.x; x++)
         {
             if (pattern->cells[y][x] == state_alive)
             {
@@ -23,7 +23,7 @@ static void print_pattern(WINDOW *pattern_win, Pattern *pattern)
 
 void play_pattern(Pattern *pattern)
 {
-    if (LINES - 2 < pattern->size.y || COLS / 2 < pattern->size.x)
+    if ((size_t)LINES - 2 < pattern->size.y || (size_t)COLS / 2 < pattern->size.x)
     {
         print_status(warning, "The pattern is bigger than your terminal window.");
         return;

@@ -6,8 +6,8 @@
 
 enum state
 {
-    state_dead = 0,
-    state_alive = 1
+    state_dead = false,
+    state_alive = true
 };
 
 typedef struct Size
@@ -18,14 +18,14 @@ typedef struct Size
 
 typedef struct Pattern
 {
-    char *name;  // Az eletter neve
-    Size size;   // Az eletter merete
-    int **cells; // Az eletter cellai: 1 = elo, 0 = halott
-    bool dirty;  // = modositva lett mentes/betoltes ota az eletter.
+    char *name;   // Az eletter neve
+    Size size;    // Az eletter merete
+    bool **cells; // Az eletter cellai: 1 = elo, 0 = halott
+    bool dirty;   // = modositva lett mentes/betoltes ota az eletter.
 } Pattern;
 
 void free_pattern(Pattern *pattern);
-int **alloc_pattern_cells(size_t y, size_t x);
+bool **alloc_pattern_cells(size_t y, size_t x);
 void next_generation(Pattern *pattern);
 
 #endif

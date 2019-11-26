@@ -183,10 +183,10 @@ void save_pattern(Pattern *pattern)
         pattern->name = (char *)calloc((strlen(name) + 1), sizeof(char));
         strcpy(pattern->name, name);
         fprintf(f, "%s%s\n!", namestring, pattern->name);
-        for (int y = 0; y < pattern->size.y; y++)
+        for (size_t y = 0; y < pattern->size.y; y++)
         {
             fputc('\n', f);
-            for (int x = 0; x < pattern->size.x; x++)
+            for (size_t x = 0; x < pattern->size.x; x++)
             {
                 fprintf(f, "%c", pattern->cells[y][x] == state_alive ? 'O' : '.');
             }

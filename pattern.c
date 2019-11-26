@@ -9,16 +9,16 @@ void free_pattern(Pattern *pattern)
     free(pattern);
 }
 
-int **alloc_pattern_cells(size_t y, size_t x)
+bool **alloc_pattern_cells(size_t y, size_t x)
 {
     // Az élettérhez szükséges memória lefoglalása (calloc-al, mert lehet,
     //  hogy az első sor hoszabb volt mint a többi, így az az első sor alatt lévő celláknak alapértelmezetten 0-nak, halottnak kell lennie.)
-    int **cells = (int **)calloc(y, sizeof(int *));
+    bool **cells = (bool **)calloc(y, sizeof(bool *));
     if (cells == NULL)
     {
         return NULL;
     }
-    cells[0] = (int *)calloc(y * x, sizeof(int));
+    cells[0] = (bool *)calloc(y * x, sizeof(bool));
     if (cells[0] == NULL)
     {
         return NULL;
@@ -33,7 +33,7 @@ int **alloc_pattern_cells(size_t y, size_t x)
 void next_generation(Pattern *pattern)
 {
     // következő generáció lefoglalása kerettel, a számoláshoz
-    int **temp_cells = alloc_pattern_cells(pattern->size.y + 2, pattern->size.x + 2);
+    bool **temp_cells = alloc_pattern_cells(pattern->size.y + 2, pattern->size.x + 2);
 
     if (temp_cells != NULL)
     {
@@ -57,7 +57,7 @@ void next_generation(Pattern *pattern)
                 {
                     for (int x_offset = -1; x_offset < 2; x_offset++)
                     {
-                        neighbor_count += temp_cells[y + y_offset][x + x_offset] == state_alive;
+                        neighbor_count += temp_cells[y + y_offset][x + x_offset];
                     }
                 }
                 if (temp_cells[y][x] == state_alive)
