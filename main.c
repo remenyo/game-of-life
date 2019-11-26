@@ -9,6 +9,17 @@
 #include "play.h"
 #include "debugmalloc.h"
 
+int warn_dirty()
+{
+    print_status(warning, "Your pattern was modified since the last save. Continue?");
+    char *no_yes[] = {"No", "Yes"};
+    if (1 == show_menu(no_yes, 2, 2))
+    {
+        return 1;
+    }
+    return 0;
+}
+
 int main()
 {
     initscr();
@@ -22,6 +33,7 @@ int main()
     int menu_items_n = 6;
     char *menu_items[] = {"New pattern", "Load pattern", "Play", "Edit", "Save", "Exit"};
     Pattern *pattern = NULL;
+
     while (true)
     {
         int selection = show_menu(menu_items, menu_items_n, 2);
@@ -47,6 +59,13 @@ int main()
             {
                 print_status(info, "No pattern was loaded. Use 'New pattern' or 'Load pattern'");
             }
+            if (pattern->dirty)
+            {
+                if (warn_dirty())
+                {
+                    play_pattern(pattern);
+                }
+            }
             else
             {
                 play_pattern(pattern);
@@ -54,7 +73,13 @@ int main()
 
             break;
         case 3: // Edit
-            /* code */
+            if (pattern->dirty)
+            {
+                if (warn_dirty())
+                {
+                    // edit_pattern(pattern);
+                }
+            }
             break;
         case 4: // Save
             if (pattern == NULL)
@@ -69,7 +94,21 @@ int main()
         case 5: // Exit
             if (pattern != NULL)
             {
-                free_pattern(pattern);
+                if (pattern->dirty)
+                {
+                    if (warn_dirty())
+                    {
+                        free_pattern(pattern);
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+                else
+                {
+                    free_pattern(pattern);
+                }
             }
             endwin();
             exit(EXIT_SUCCESS);

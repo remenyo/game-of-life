@@ -46,6 +46,7 @@ void next_generation(Pattern *pattern)
             }
         }
 
+        pattern->dirty = true;
         // számítás
         for (size_t y = 1; y < pattern->size.y + 1; y++)
         {
