@@ -11,9 +11,10 @@
 
 int warn_dirty()
 {
+    clear();
     print_status(warning, "Your pattern was modified since the last save. Continue?");
-    char *no_yes[] = {"No", "Yes"};
-    if (1 == show_menu(no_yes, 2, 2))
+    char *choices[] = {"Go back", "Continue"};
+    if (1 == show_menu(choices, 2, 2))
     {
         return 1;
     }
@@ -45,13 +46,33 @@ int main()
         case 1: // Load pattern
             if (pattern != NULL)
             {
-                free_pattern(pattern);
-                pattern = NULL;
+                if (pattern->dirty)
+                {
+                    if (warn_dirty())
+                    {
+                        free_pattern(pattern);
+                        pattern = NULL;
+                        pattern = load_file();
+                    }
+                }
+                else
+                {
+                    free_pattern(pattern);
+                    pattern = NULL;
+                    pattern = load_file();
+                }
             }
-            pattern = load_file();
+            else
+            {
+                pattern = load_file();
+            }
             if (pattern != NULL)
             {
                 print_status(successful, "Pattern loaded successfully!");
+            }
+            else
+            {
+                print_status(info, "No pattern was loaded.");
             }
             break;
         case 2: // Play
@@ -83,6 +104,11 @@ int main()
                     // edit_pattern(pattern);
                 }
             }
+            else
+            {
+                // edit_pattern(pattern);
+            }
+
             break;
         case 4: // Save
             if (pattern == NULL)

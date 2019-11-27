@@ -40,9 +40,14 @@ void play_pattern(Pattern *pattern)
     box(pattern_win, ACS_VLINE, ACS_HLINE);
     print_pattern(pattern_win, pattern);
     wrefresh(pattern_win);
-    int c;
+    int c;                 // Billentyű bemenet
+    int delay_amount = 10; // = 10 tized másodperc
+    bool continuous_mode = false;
     while ((c = wgetch(pattern_win)) != 'x')
     {
+        if (continuous_mode)
+            halfdelay(delay_amount);
+
         switch (c)
         {
         case ' ':
@@ -51,8 +56,31 @@ void play_pattern(Pattern *pattern)
             wrefresh(pattern_win);
             print_status(info, "Next generation");
             break;
+        case KEY_UP:
+            if (delay_amount > 1) // = max fps az ncurses miatt 1 tized mp
+                delay_amount--;
+            break;
+        case KEY_DOWN:
+            if (delay_amount < 10) // = min fps = 10/10=1 mp
+                delay_amount++;
+            break;
+        case 'c':
+            continuous_mode = !continuous_mode;
+            if (continuous_mode)
+                halfdelay(delay_amount);
+            else
+                cbreak();
+            print_status(info, "Continous mode");
+            break;
         default:
+            if (continuous_mode)
+            {
+                ungetch(' '); // Mintha megnyomtam volna a space-t
+            }
             break;
         }
     }
+    // Ha folyamatos üzemmódban kilép a felhasználó, a halfdelay üzemmód megmarad.
+    cbreak();
+    // Nem szükséges, de visszaállítom.
 }
