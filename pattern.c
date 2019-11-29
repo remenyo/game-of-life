@@ -1,4 +1,8 @@
+#include <string.h>
+#include <stdlib.h>
 #include "pattern.h"
+#include "status.h"
+#include "input.h"
 #include "debugmalloc.h"
 
 void free_pattern(Pattern *pattern)
@@ -80,4 +84,52 @@ void next_generation(Pattern *pattern)
         free(temp_cells[0]);
         free(temp_cells);
     }
+}
+
+void flip_cell(Pattern *pattern, int y, int x)
+{
+    pattern->cells[y][x] = !pattern->cells[y][x];
+    pattern->dirty = true;
+}
+
+Pattern *new_empty_pattern()
+{
+    Pattern *pattern = malloc(sizeof(Pattern));
+    Size size;
+    pattern->name = get_input("Name of pattern:");
+    char *width = get_input("Width of pattern:");
+    if ((size.x = strtoul(width, NULL, 0)) == 0)
+    {
+        free(width);
+        print_status(error, "Invalid width.");
+        free(pattern->name);
+        free(pattern);
+        return NULL;
+    }
+    char *height = get_input("Height of pattern:");
+    if ((size.y = strtoul(height, NULL, 0)) == 0)
+    {
+        free(width);
+        free(height);
+        print_status(error, "Invalid height.");
+        free(pattern->name);
+        free(pattern);
+        return NULL;
+    }
+    free(width);
+    free(height);
+
+    pattern->size.x = size.x;
+    pattern->size.y = size.y;
+    pattern->cells = alloc_pattern_cells(size.y, size.x);
+    if (pattern->cells == NULL)
+    {
+        print_status(error, "Pattern allocation failed");
+        free(pattern->name);
+        free(pattern);
+        return NULL;
+    }
+    pattern->dirty = false;
+    print_status(successful, "Pattern created succesfully");
+    return pattern;
 }

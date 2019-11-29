@@ -1,14 +1,14 @@
 #include <ncurses.h>
 #include <string.h>
-#include <ctype.h>
+#include <string.h>
 
 #include "status.h"
 #include "debugmalloc.h"
 
 char *get_input(char *message)
 {
-    int rows, c; // = Terminal magassag a 'c' valtozo a billentyu bemenet tarolasahoz kell.
-    rows = getmaxy(stdscr);
+    size_t screen_size_y, screen_size_x;
+    getmaxyx(stdscr, screen_size_y, screen_size_x);
     print_status(info, message);
     attron(COLOR_PAIR(info));
     int x_null = strlen(message) + 2; // +2 = space
@@ -16,7 +16,8 @@ char *get_input(char *message)
     int curs_pos;
     char *input = (char *)malloc(1 * sizeof(char));
     input[0] = 0;
-    while ((c = getch()) != 10)
+    int c;
+    while ((c = getch()) != 10 || curs_pos == 0)
     {
         curs_pos = x - x_null;
         switch (c)
@@ -25,20 +26,20 @@ char *get_input(char *message)
         case 127:
             if (curs_pos == 0)
             {
-                mvaddch(rows - 1, x_null + curs_pos - 1, ' ');
+                mvaddch(screen_size_y - 1, x_null + curs_pos - 1, ' ');
                 input[curs_pos] = 0;
             }
             if (curs_pos > 0)
             {
                 x--;
-                mvaddch(rows - 1, x_null + curs_pos - 1, ' ');
+                mvaddch(screen_size_y - 1, x_null + curs_pos - 1, ' ');
                 input[curs_pos - 1] = 0;
             }
             break;
         default:
-            if (isprint(c))
+            if (isprint(c) && screen_size_x > (curs_pos + strlen(message) + 2))
             {
-                mvaddch(rows - 1, x_null + curs_pos, c);
+                mvaddch(screen_size_y - 1, x_null + curs_pos, c);
                 input = realloc(input, sizeof(char) * curs_pos + 2);
                 input[curs_pos] = c;
                 input[curs_pos + 1] = 0;

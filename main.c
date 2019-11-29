@@ -7,55 +7,76 @@
 #include "status.h"
 #include "input.h"
 #include "play.h"
+#include "edit.h"
 #include "debugmalloc.h"
 
-int warn_dirty()
+bool warn_dirty();
+void event_loop();
+
+int screen_size_x, screen_size_y;
+int menu_items_n = 7;
+char *menu_items[] = {"New pattern", "Load pattern", "Play", "Edit", "Save", "Resize terminal", "Exit"};
+Pattern *pattern = NULL;
+
+int main()
+{
+    initscr();
+    printf("\033[?1003h\n");
+    cbreak();
+    noecho();
+    mouseinterval(0);
+    keypad(stdscr, TRUE);
+    mousemask(ALL_MOUSE_EVENTS | REPORT_MOUSE_POSITION, NULL);
+    curs_set(0);
+    start_color();
+    init_status();
+
+    while (true)
+    {
+        event_loop();
+    }
+}
+
+bool warn_dirty()
 {
     clear();
     print_status(warning, "Your pattern was modified since the last save. Continue?");
     char *choices[] = {"Go back", "Continue"};
     if (1 == show_menu(choices, 2, 2))
     {
-        return 1;
+        return true;
     }
-    return 0;
+    return false;
 }
 
-int main()
+void event_loop()
 {
-    initscr();
-    cbreak();
-    noecho();
-    keypad(stdscr, TRUE);
-    curs_set(0);
-    start_color();
-    init_status();
-
-    int menu_items_n = 6;
-    char *menu_items[] = {"New pattern", "Load pattern", "Play", "Edit", "Save", "Exit"};
-    Pattern *pattern = NULL;
-
-    while (true)
+    int selection = show_menu(menu_items, menu_items_n, 2);
+    switch (selection)
     {
-        int selection = show_menu(menu_items, menu_items_n, 2);
-        switch (selection)
+    case 0: // New pattern
+        if (pattern != NULL)
         {
-        case 0: // New pattern
-            /* code */
-            break;
-        case 1: // Load pattern
-            if (pattern != NULL)
+            if (pattern->dirty)
             {
-                if (pattern->dirty)
+                if (warn_dirty())
                 {
-                    if (warn_dirty())
-                    {
-                        free_pattern(pattern);
-                        pattern = NULL;
-                        pattern = load_file();
-                    }
+                    free_pattern(pattern);
+                    pattern = new_empty_pattern();
                 }
-                else
+            }
+            else
+                pattern = new_empty_pattern();
+        }
+        else
+            pattern = new_empty_pattern();
+        break;
+    case 1: // Load pattern
+        if (pattern != NULL)
+        {
+            if (pattern->dirty)
+            {
+                if (warn_dirty())
                 {
                     free_pattern(pattern);
                     pattern = NULL;
@@ -64,86 +85,103 @@ int main()
             }
             else
             {
+                free_pattern(pattern);
+                pattern = NULL;
                 pattern = load_file();
             }
-            if (pattern != NULL)
-            {
-                print_status(successful, "Pattern loaded successfully!");
-            }
-            else
-            {
-                print_status(info, "No pattern was loaded.");
-            }
-            break;
-        case 2: // Play
-            if (pattern == NULL)
-            {
-                print_status(info, "No pattern was loaded. Use 'New pattern' or 'Load pattern'");
-            }
+        }
+        else
+        {
+            pattern = load_file();
+        }
+        if (pattern != NULL)
+        {
+            print_status(successful, "Pattern loaded successfully!");
+        }
+        break;
+    case 2: // Play
+        if (pattern == NULL)
+        {
+            print_status(info, "No pattern loaded. Use 'New pattern' or 'Load pattern'");
+        }
 
-            else
-            {
-                if (pattern->dirty)
-                {
-                    if (warn_dirty())
-                    {
-                        play_pattern(pattern);
-                    }
-                }
-                else
-                {
-                    play_pattern(pattern);
-                }
-            }
-            break;
-        case 3: // Edit
+        else
+        {
             if (pattern->dirty)
             {
                 if (warn_dirty())
                 {
-                    // edit_pattern(pattern);
+                    play_pattern(pattern);
                 }
             }
             else
             {
-                // edit_pattern(pattern);
+                play_pattern(pattern);
             }
-
-            break;
-        case 4: // Save
-            if (pattern == NULL)
+        }
+        break;
+    case 3: // Edit
+        if (pattern != NULL)
+        {
+            if (pattern->dirty)
             {
-                print_status(info, "No pattern was loaded. Use 'New pattern' or 'Load pattern'");
-            }
-            else
-            {
-                save_pattern(pattern);
-            }
-            break;
-        case 5: // Exit
-            if (pattern != NULL)
-            {
-                if (pattern->dirty)
+                if (warn_dirty())
                 {
-                    if (warn_dirty())
-                    {
-                        free_pattern(pattern);
-                    }
-                    else
-                    {
-                        break;
-                    }
+                    edit_pattern(pattern);
                 }
-                else
+            }
+            else
+            {
+                edit_pattern(pattern);
+            }
+        }
+        else
+        {
+            print_status(info, "No pattern loaded. Use 'New pattern' or 'Load pattern'");
+        }
+
+        break;
+    case 4: // Save
+        if (pattern == NULL)
+        {
+            print_status(info, "No pattern loaded. Use 'New pattern' or 'Load pattern'");
+        }
+        else
+        {
+            save_pattern(pattern);
+        }
+        break;
+    case 5: //
+        getmaxyx(stdscr, screen_size_y, screen_size_x);
+        wresize(stdscr, screen_size_y, screen_size_x);
+        clear();
+        // resizeterm(screen_size_y, screen_size_x);
+        refresh();
+        break;
+    case 6: // Exit
+        if (pattern != NULL)
+        {
+            if (pattern->dirty)
+            {
+                if (warn_dirty())
                 {
                     free_pattern(pattern);
                 }
+                else
+                {
+                    break;
+                }
             }
-            endwin();
-            exit(EXIT_SUCCESS);
-            break;
-        default:
-            break;
+            else
+            {
+                free_pattern(pattern);
+            }
         }
+        endwin();
+        printf("\033[?1003l\n");
+        exit(EXIT_SUCCESS);
+        break;
+    default:
+        break;
     }
 }

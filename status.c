@@ -3,6 +3,7 @@
 void init_status()
 {
     // Színek (Nord):
+    init_color(COLOR_WHITE, 925, 937, 957);
     init_color(COLOR_BLACK, 180, 204, 251);
     init_color(COLOR_RED, 749, 380, 416);
     init_color(COLOR_GREEN, 639, 745, 549);
@@ -17,13 +18,15 @@ void init_status()
 
 void print_status(int message_type, char *message)
 {
+    int screen_size_y, screen_size_x;
+    getmaxyx(stdscr, screen_size_y, screen_size_x);
     attron(COLOR_PAIR(message_type));
-    move(LINES - 1, 0);
-    for (int i = 0; i < COLS; i++) // Előző üzenet törlése
+    move(screen_size_y - 1, 0);
+    for (int i = 0; i < screen_size_x; i++) // Előző üzenet törlése
     {
         addch(' ');
     }
-    move(LINES - 1, 1);
+    move(screen_size_y - 1, 1);
     printw(message);
     attroff(COLOR_PAIR(message_type));
     refresh();

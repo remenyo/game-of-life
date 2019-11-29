@@ -31,9 +31,10 @@ static void print_menu_items(WINDOW *menu_win, char **menu_items, int items_n, i
 
 int show_menu(char **menu_items, int items_n, int border_size)
 {
-    int selection = 0; // = Kivalasztott elem
-    int c;             // = Terminal magassag, szelesseg, a 'c' valtozo a billentyu bemenet tarolasahoz kell
-    WINDOW *menu_win = newwin(items_n + border_size, longest_menu_item_lenght(menu_items, items_n) + border_size * 2, (LINES - (items_n + border_size)) / 2, (COLS - (longest_menu_item_lenght(menu_items, items_n) + border_size * 2)) / 2);
+    int selection = 0;                   // = Kivalasztott elem
+    int screen_size_y, screen_size_x, c; // = Terminal magassag, szelesseg, a 'c' valtozo a billentyu bemenet tarolasahoz kell
+    getmaxyx(stdscr, screen_size_y, screen_size_x);
+    WINDOW *menu_win = newwin(items_n + border_size, longest_menu_item_lenght(menu_items, items_n) + border_size * 2, (screen_size_y - (items_n + border_size)) / 2, (screen_size_x - (longest_menu_item_lenght(menu_items, items_n) + border_size * 2)) / 2);
     keypad(menu_win, TRUE);
     box(menu_win, ACS_VLINE, ACS_HLINE);
     print_menu_items(menu_win, menu_items, items_n, selection, border_size);
@@ -47,9 +48,6 @@ int show_menu(char **menu_items, int items_n, int border_size)
             break;
         case KEY_DOWN:
             selection == items_n - 1 ? selection = 0 : selection++;
-            break;
-        case KEY_RESIZE:
-            refresh();
             break;
         default:
             break;

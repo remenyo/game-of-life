@@ -27,5 +27,7 @@ typedef struct Pattern
 void free_pattern(Pattern *pattern);
 bool **alloc_pattern_cells(size_t y, size_t x);
 void next_generation(Pattern *pattern);
+void flip_cell(Pattern *pattern, int y, int x);
+Pattern *new_empty_pattern();
 
 #endif

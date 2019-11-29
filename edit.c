@@ -1,7 +1,7 @@
 #include <ncurses.h>
 
-#include "status.h"
 #include "pattern.h"
+#include "status.h"
 
 static void print_pattern(WINDOW *pattern_win, Pattern *pattern)
 {
@@ -21,7 +21,7 @@ static void print_pattern(WINDOW *pattern_win, Pattern *pattern)
     wrefresh(pattern_win);
 }
 
-void play_pattern(Pattern *pattern)
+void edit_pattern(Pattern *pattern)
 {
     size_t screen_size_y, screen_size_x; // = Terminal magassag, szelesseg
     getmaxyx(stdscr, screen_size_y, screen_size_x);
@@ -42,48 +42,28 @@ void play_pattern(Pattern *pattern)
     box(pattern_win, ACS_VLINE, ACS_HLINE);
     print_pattern(pattern_win, pattern);
     wrefresh(pattern_win);
-
-    int delay_amount = 10; // = 10 tized másodperc
-    bool continuous_mode = false;
     int c;
-    while ((c = wgetch(pattern_win)) != 'x')
+    size_t mouse_pos_y, mouse_pos_x;
+    MEVENT event;
+    while ((c = wgetch(stdscr)) != 'x')
     {
-        if (continuous_mode)
-            halfdelay(delay_amount);
-
         switch (c)
         {
-        case ' ':
-            next_generation(pattern);
+        case KEY_MOUSE:
+            if (getmouse(&event) == OK)
+            {
+                mouse_pos_y = event.y - ((screen_size_y - pattern->size.y) - 2) / 2 - 1;
+                mouse_pos_x = (event.x - ((screen_size_x - (pattern->size.x + 1) * 2)) / 2 + 1) / 2 - 1;
+            }
+            if ((event.bstate & (BUTTON1_PRESSED)) && (mouse_pos_y < pattern->size.y) && (mouse_pos_x < pattern->size.x))
+            {
+                flip_cell(pattern, mouse_pos_y, mouse_pos_x);
+            }
             print_pattern(pattern_win, pattern);
             wrefresh(pattern_win);
-            print_status(info, "Next generation");
-            break;
-        case KEY_UP:
-            if (delay_amount > 1) // = max fps az ncurses miatt 1 tized mp
-                delay_amount--;
-            break;
-        case KEY_DOWN:
-            if (delay_amount < 10) // = min fps = 10/10=1 mp
-                delay_amount++;
-            break;
-        case 'c':
-            continuous_mode = !continuous_mode;
-            if (continuous_mode)
-                halfdelay(delay_amount);
-            else
-                cbreak();
-            print_status(info, "Continous mode");
             break;
         default:
-            if (continuous_mode)
-            {
-                ungetch(' '); // Mintha megnyomtam volna a space-t
-            }
             break;
         }
     }
-    // Ha folyamatos üzemmódban kilép a felhasználó, a halfdelay üzemmód megmarad.
-    cbreak();
-    // Nem szükséges, de hatékonyabb, ha visszaállítom.
 }
