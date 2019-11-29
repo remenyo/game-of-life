@@ -1,6 +1,10 @@
 #include <string.h>
 #include <stdlib.h>
+#if defined (__MINGW64__) || (__MINGW32__)
+#include <ncursesw/ncurses.h>
+#else
 #include <ncurses.h>
+#endif
 
 #include "pattern.h"
 #include "status.h"

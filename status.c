@@ -1,4 +1,8 @@
+#if defined (__MINGW64__) || (__MINGW32__)
+#include <ncursesw/ncurses.h>
+#else
 #include <ncurses.h>
+#endif
 #include <stdarg.h>
 
 void init_status()

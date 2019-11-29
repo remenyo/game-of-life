@@ -1,13 +1,17 @@
 OBJS	= main.o menu.o file.o pattern.o status.o input.o play.o edit.o
 SOURCE	= main.c menu.c file.c pattern.c status.c input.c play.c edit.c
 HEADER	= menu.h file.h pattern.h input.h play.h edit.h debugmalloc.h
-OUT	= main
+OUT	= debug
 CC	 = gcc
-FLAGS	 = -g -c -Wall -Wextra -std=c99
+FLAGS	 = -g3 -c -Wall -Wextra -std=c99
 LFLAGS	 = -lncurses
 
 all: $(OBJS)
-	$(CC) -g $(OBJS) -o $(OUT) $(LFLAGS)
+	$(CC) $(OBJS) -o $(OUT) $(LFLAGS)
+
+release:
+	gcc -Wall -Wextra -fpic -std=c99 -o release *.c $(LFLAGS)
+	x86_64-w64-mingw32-gcc -Wall -Wextra -fpic -std=c99 -o release.exe *.c -lncursesw
 
 main.o: main.c
 	$(CC) $(FLAGS) main.c
@@ -34,4 +38,4 @@ edit.o: edit.c
 	$(CC) $(FLAGS) edit.c
 
 clean:
-	rm -f $(OBJS) $(OUT)
+	rm -f $(OBJS) $(OUT) release release.exe
