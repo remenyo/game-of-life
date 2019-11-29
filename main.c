@@ -15,13 +15,12 @@ void event_loop();
 
 int screen_size_x, screen_size_y;
 int menu_items_n = 7;
-char *menu_items[] = {"New pattern", "Load pattern", "Play", "Edit", "Save", "Resize terminal", "Exit"};
+char *menu_items[] = {"New pattern", "Load pattern", "Play", "Edit", "Save", "Refresh menu", "Exit"};
 Pattern *pattern = NULL;
 
 int main()
 {
     initscr();
-    printf("\033[?1003h\n");
     cbreak();
     noecho();
     mouseinterval(0);
@@ -66,7 +65,10 @@ void event_loop()
                 }
             }
             else
+            {
+                free_pattern(pattern);
                 pattern = new_empty_pattern();
+            }
         }
         else
             pattern = new_empty_pattern();
@@ -178,7 +180,6 @@ void event_loop()
             }
         }
         endwin();
-        printf("\033[?1003l\n");
         exit(EXIT_SUCCESS);
         break;
     default:

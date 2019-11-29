@@ -76,7 +76,7 @@ void play_pattern(Pattern *pattern)
             print_status(info, "Continous mode");
             break;
         default:
-            if (continuous_mode)
+            if (continuous_mode && c != KEY_MOUSE)
             {
                 ungetch(' '); // Mintha megnyomtam volna a space-t
             }

@@ -17,7 +17,7 @@ char *get_input(char *message)
     char *input = (char *)malloc(1 * sizeof(char));
     input[0] = 0;
     int c;
-    while ((c = getch()) != 10 || curs_pos == 0)
+    while ((c = getch()) != 10)
     {
         curs_pos = x - x_null;
         switch (c)
