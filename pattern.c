@@ -1,5 +1,7 @@
 #include <string.h>
 #include <stdlib.h>
+#include <ncurses.h>
+
 #include "pattern.h"
 #include "status.h"
 #include "input.h"
@@ -100,8 +102,8 @@ Pattern *new_empty_pattern()
     char *width = get_input("Width of pattern:");
     if ((size.x = strtoul(width, NULL, 0)) == 0)
     {
+        print_status(error, "Invalid width. (%s)", width);
         free(width);
-        print_status(error, "Invalid width.");
         free(pattern->name);
         free(pattern);
         return NULL;
@@ -109,9 +111,9 @@ Pattern *new_empty_pattern()
     char *height = get_input("Height of pattern:");
     if ((size.y = strtoul(height, NULL, 0)) == 0)
     {
+        print_status(error, "Invalid height. (%s)", height);
         free(width);
         free(height);
-        print_status(error, "Invalid height.");
         free(pattern->name);
         free(pattern);
         return NULL;
@@ -124,12 +126,13 @@ Pattern *new_empty_pattern()
     pattern->cells = alloc_pattern_cells(size.y, size.x);
     if (pattern->cells == NULL)
     {
+        clear(); // Debugmalloc is szól hogy nem sikerült, de köszönöm, inkább kiírom én.
         print_status(error, "Pattern allocation failed");
         free(pattern->name);
         free(pattern);
         return NULL;
     }
     pattern->dirty = false;
-    print_status(successful, "Pattern created succesfully");
+    print_status(successful, "Pattern (%s) created succesfully", pattern->name);
     return pattern;
 }

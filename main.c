@@ -98,7 +98,7 @@ void event_loop()
         }
         if (pattern != NULL)
         {
-            print_status(successful, "Pattern loaded successfully!");
+            print_status(successful, "Pattern (%s) loaded successfully!", pattern->name);
         }
         break;
     case 2: // Play

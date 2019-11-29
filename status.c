@@ -1,4 +1,5 @@
 #include <ncurses.h>
+#include <stdarg.h>
 
 void init_status()
 {
@@ -16,7 +17,7 @@ void init_status()
     init_pair(4, COLOR_WHITE, COLOR_RED);    // error
 }
 
-void print_status(int message_type, char *message)
+void print_status(int message_type, char *message, ...)
 {
     int screen_size_y, screen_size_x;
     getmaxyx(stdscr, screen_size_y, screen_size_x);
@@ -27,7 +28,9 @@ void print_status(int message_type, char *message)
         addch(' ');
     }
     move(screen_size_y - 1, 1);
-    printw(message);
+    va_list args;
+    va_start(args, message);
+    vw_printw(stdscr, message, args);
     attroff(COLOR_PAIR(message_type));
     refresh();
 }

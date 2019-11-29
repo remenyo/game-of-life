@@ -25,15 +25,15 @@ void play_pattern(Pattern *pattern)
 {
     size_t screen_size_y, screen_size_x; // = Terminal magassag, szelesseg
     getmaxyx(stdscr, screen_size_y, screen_size_x);
-    if (screen_size_y - 2 < pattern->size.y || screen_size_x / 2 < pattern->size.x)
+    if (screen_size_y - 2 < pattern->size.y || (screen_size_x + 2) / 2 < pattern->size.x)
     {
-        print_status(warning, "The pattern is bigger than your terminal window.");
+        print_status(warning, "The pattern (%dx%d) is bigger than your terminal window. (%dx%d)", pattern->size.y, pattern->size.x, screen_size_y - 2, (screen_size_x + 2) / 2);
         return;
     }
     WINDOW *pattern_win = newwin(pattern->size.y + 2, ((pattern->size.x + 1) * 2), ((screen_size_y - pattern->size.y) - 2) / 2, ((screen_size_x - (pattern->size.x + 1) * 2)) / 2);
     if (pattern_win == NULL)
     {
-        print_status(error, "Pattern window allocation failed.");
+        print_status(error, "Pattern window allocation failed. (Make the terminal a little bit bigger.)");
         return;
     }
     clear();
@@ -57,15 +57,16 @@ void play_pattern(Pattern *pattern)
             next_generation(pattern);
             print_pattern(pattern_win, pattern);
             wrefresh(pattern_win);
-            print_status(info, "Next generation");
             break;
         case KEY_UP:
             if (delay_amount > 1) // = max fps az ncurses miatt 1 tized mp
                 delay_amount--;
+            print_status(info, "Step frequency: %d FPS", 11 - delay_amount);
             break;
         case KEY_DOWN:
             if (delay_amount < 10) // = min fps = 10/10=1 mp
                 delay_amount++;
+            print_status(info, "Step frequency: %d FPS", 11 - delay_amount);
             break;
         case 'c':
             continuous_mode = !continuous_mode;
@@ -73,10 +74,10 @@ void play_pattern(Pattern *pattern)
                 halfdelay(delay_amount);
             else
                 cbreak();
-            print_status(info, "Continous mode");
+            print_status(info, "Continous mode: %s", continuous_mode ? "ON" : "OFF");
             break;
         default:
-            if (continuous_mode && c != KEY_MOUSE)
+            if (continuous_mode)
             {
                 ungetch(' '); // Mintha megnyomtam volna a space-t
             }

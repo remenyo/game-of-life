@@ -1,6 +1,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
+#include <ncurses.h>
 
 #include "status.h"
 #include "input.h"
@@ -19,7 +20,7 @@ static bool file_valid(FILE *file)
         if (c != namestring[i])
         {
             //Ha nem egyezik meg karakterre pontosan a beolvasott szöveg a namestring-gel, hibás a formátum.
-            print_status(error, "Error in the name field of your file.");
+            print_status(error, "Error in the name field of your file. (found: '%c')", c);
             return 0;
         }
     }
@@ -41,7 +42,7 @@ static bool file_valid(FILE *file)
     {
         if ((c != '.') && (c != 'O') && (c != '\n'))
         {
-            print_status(warning, "A not valid character was found in your pattern.");
+            print_status(warning, "A not valid character (%c) was found in your pattern.", c);
             return false;
         }
         if (!pattern_exists && (c == '.' || c == 'O'))
@@ -63,12 +64,13 @@ struct Pattern *load_file() // Beolvas egy fájlt, és ha helyes a formázás, m
 {
     char *filename = get_input("Name of file:");
     FILE *file = fopen(filename, "rt");
-    free(filename);
     if (file == NULL)
     {
-        print_status(error, "Failed to open file.");
+        print_status(error, "Failed to open file: \"%s\"", filename);
+        free(filename);
         return NULL;
     }
+    free(filename);
     if (!file_valid(file))
     {
         // A státuszokat részletesebben kezeli a file_valid függvény
@@ -138,6 +140,7 @@ struct Pattern *load_file() // Beolvas egy fájlt, és ha helyes a formázás, m
 
     if (pattern->cells == NULL)
     {
+        clear(); // Debugmalloc is szól hogy nem sikerült, de köszönöm, inkább kiírom én.
         print_status(error, "Memory allocation failed.");
         return NULL;
     }
@@ -192,7 +195,7 @@ void save_pattern(Pattern *pattern)
             }
         }
         fclose(f);
-        print_status(successful, "Pattern saved successfully!");
+        print_status(successful, "Pattern saved successfully! (%s) ", filename);
         pattern->dirty = false;
     }
     free(name);
