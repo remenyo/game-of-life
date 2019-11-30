@@ -1,8 +1,4 @@
-#if defined (__MINGW64__) || (__MINGW32__)
-#include <ncursesw/ncurses.h>
-#else
 #include <ncurses.h>
-#endif
 
 #include "pattern.h"
 #include "status.h"
@@ -54,7 +50,11 @@ void edit_pattern(Pattern *pattern)
         switch (c)
         {
         case KEY_MOUSE:
+#if defined(__MINGW64__) || (__MINGW32__)
+            if (nc_getmouse(&event) == OK)
+#else
             if (getmouse(&event) == OK)
+#endif
             {
                 mouse_pos_y = event.y - ((screen_size_y - pattern->size.y) - 2) / 2 - 1;
                 mouse_pos_x = (event.x - ((screen_size_x - (pattern->size.x + 1) * 2)) / 2 + 1) / 2 - 1;

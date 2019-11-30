@@ -1,18 +1,15 @@
-#if defined (__MINGW64__) || (__MINGW32__)
-#include <ncursesw/ncurses.h>
-#else
 #include <ncurses.h>
-#endif
+
 #include <stdbool.h>
 
-#include "menu.h"
-#include "file.h"
-#include "pattern.h"
-#include "status.h"
-#include "input.h"
-#include "play.h"
-#include "edit.h"
 #include "debugmalloc.h"
+#include "edit.h"
+#include "file.h"
+#include "input.h"
+#include "menu.h"
+#include "pattern.h"
+#include "play.h"
+#include "status.h"
 
 bool warn_dirty();
 void event_loop();

@@ -1,8 +1,4 @@
-#if defined (__MINGW64__) || (__MINGW32__)
-#include <ncursesw/ncurses.h>
-#else
 #include <ncurses.h>
-#endif
 #include <string.h>
 
 static size_t longest_menu_item_lenght(char **menu_items, int items_n)

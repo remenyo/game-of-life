@@ -10,8 +10,8 @@ all: $(OBJS)
 	$(CC) $(OBJS) -o $(OUT) $(LFLAGS)
 
 release:
-	gcc -Wall -Wextra -fpic -std=c99 -o release *.c $(LFLAGS)
-	x86_64-w64-mingw32-gcc -Wall -Wextra -fpic -std=c99 -o release.exe *.c -lncursesw
+	gcc -Wall -Wextra -v -std=c99 -o release *.c $(LFLAGS)
+	# windows : x86_64-w64-mingw32-gcc -v -Wall -Wextra -std=c99 -o release.exe *.c -L./ -lpdcurses
 
 main.o: main.c
 	$(CC) $(FLAGS) main.c

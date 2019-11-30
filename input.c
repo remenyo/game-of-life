@@ -1,13 +1,8 @@
-#if defined (__MINGW64__) || (__MINGW32__)
-#include <ncursesw/ncurses.h>
-#else
 #include <ncurses.h>
-#endif
-#include <string.h>
 #include <string.h>
 
-#include "status.h"
 #include "debugmalloc.h"
+#include "status.h"
 
 char *get_input(char *message)
 {
